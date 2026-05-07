@@ -11,6 +11,7 @@ import argparse
 import json
 import sys
 from pathlib import Path
+from typing import Optional
 
 
 SCORE_KEYS = [
@@ -28,7 +29,7 @@ def load(path: str) -> tuple[dict, list]:
     return meta, data
 
 
-def pick_model_results(data: dict, model: str | None) -> tuple[str, list]:
+def pick_model_results(data: dict, model: Optional[str]) -> tuple:
     """Return (model_name, list_of_case_results) from a result file."""
     # Skip _meta key
     model_keys = [k for k in data if not k.startswith("_")]
@@ -42,16 +43,16 @@ def pick_model_results(data: dict, model: str | None) -> tuple[str, list]:
     return model_keys[0], data[model_keys[0]]
 
 
-def avg(cases: list, key: str) -> float | None:
+def avg(cases: list, key: str) -> Optional[float]:
     vals = [c[key] for c in cases if key in c]
     return sum(vals) / len(vals) if vals else None
 
 
-def fmt(val: float | None) -> str:
+def fmt(val: Optional[float]) -> str:
     return f"{val:.2f}" if val is not None else " — "
 
 
-def delta(a: float | None, b: float | None) -> str:
+def delta(a: Optional[float], b: Optional[float]) -> str:
     if a is None or b is None:
         return ""
     d = b - a
@@ -63,8 +64,8 @@ def delta(a: float | None, b: float | None) -> str:
 def print_comparison(
     path_a: str,
     path_b: str,
-    model: str | None,
-    category_filter: str | None,
+    model: Optional[str],
+    category_filter: Optional[str],
 ) -> None:
     meta_a, data_a = load(path_a)
     meta_b, data_b = load(path_b)
