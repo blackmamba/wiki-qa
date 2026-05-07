@@ -5,6 +5,7 @@
     "category": "simple",
     "reference_answer": "Tokyo",
     "should_search": true,
+    "citation_expected": true,
     "eval_dimensions": ["correctness"]
   },
   {
@@ -13,6 +14,7 @@
     "category": "simple",
     "reference_answer": "1889",
     "should_search": true,
+    "citation_expected": true,
     "eval_dimensions": ["correctness"]
   },
   {
@@ -21,6 +23,7 @@
     "category": "simple",
     "reference_answer": "206",
     "should_search": true,
+    "citation_expected": true,
     "eval_dimensions": ["correctness"]
   },
   {
@@ -29,6 +32,7 @@
     "category": "simple",
     "reference_answer": "Jane Austen",
     "should_search": true,
+    "citation_expected": true,
     "eval_dimensions": ["correctness"]
   },
   {
@@ -37,6 +41,7 @@
     "category": "simple",
     "reference_answer": "Jupiter",
     "should_search": true,
+    "citation_expected": true,
     "eval_dimensions": ["correctness"]
   },
   {
@@ -45,6 +50,7 @@
     "category": "multi_hop",
     "reference_answer": "George H.W. Bush. The Hubble was launched in April 1990.",
     "should_search": true,
+    "citation_expected": true,
     "eval_dimensions": ["correctness"]
   },
   {
@@ -53,6 +59,7 @@
     "category": "multi_hop",
     "reference_answer": "Lima. The Amazon originates in Peru, whose capital is Lima.",
     "should_search": true,
+    "citation_expected": true,
     "eval_dimensions": ["correctness"]
   },
   {
@@ -61,6 +68,7 @@
     "category": "multi_hop",
     "reference_answer": "1975. Bill Gates dropped out of Harvard in 1975 to co-found Microsoft.",
     "should_search": true,
+    "citation_expected": true,
     "eval_dimensions": ["correctness"]
   },
   {
@@ -69,6 +77,7 @@
     "category": "multi_hop",
     "reference_answer": "Euro. France won the 2018 FIFA World Cup, and France uses the Euro.",
     "should_search": true,
+    "citation_expected": true,
     "eval_dimensions": ["correctness"]
   },
   {
@@ -77,6 +86,7 @@
     "category": "disambiguation",
     "reference_answer": "Mercury is ambiguous: it can refer to the planet closest to the Sun, a chemical element (atomic number 80), the Roman messenger god, or the music band. A good answer acknowledges multiple meanings.",
     "should_search": true,
+    "citation_expected": true,
     "eval_dimensions": ["correctness"]
   },
   {
@@ -85,6 +95,7 @@
     "category": "disambiguation",
     "reference_answer": "Java is ambiguous: it can refer to the Indonesian island, the Java programming language, or Java coffee. A good answer acknowledges multiple meanings.",
     "should_search": true,
+    "citation_expected": true,
     "eval_dimensions": ["correctness"]
   },
   {
@@ -93,70 +104,133 @@
     "category": "disambiguation",
     "reference_answer": "Ajax is ambiguous: Ajax is a figure from Greek mythology, a Dutch football club (AFC Ajax), and a JavaScript programming technique (Asynchronous JavaScript and XML). A good answer acknowledges multiple meanings.",
     "should_search": true,
+    "citation_expected": true,
     "eval_dimensions": ["correctness"]
   },
   {
     "id": 13,
     "question": "Who is the current CEO of Apple?",
     "category": "time_sensitive",
-    "reference_answer": "Tim Cook has been Apple's CEO since 2011. Model should search rather than rely solely on training data, and should indicate this may change.",
+    "reference_answer": "Tim Cook has been Apple's CEO since 2011. A good answer searches Wikipedia and notes the information may have changed or reflects a Wikipedia snapshot.",
     "should_search": true,
-    "eval_dimensions": ["correctness", "calibration"]
+    "citation_expected": true,
+    "eval_dimensions": ["correctness", "temporal_hedging"]
   },
   {
     "id": 14,
     "question": "What is the current population of India?",
     "category": "time_sensitive",
-    "reference_answer": "Approximately 1.4 billion as of recent estimates. India surpassed China as the world's most populous country around 2023. Model should search and note data may be from a particular year.",
+    "reference_answer": "Approximately 1.4 billion as of recent estimates. India surpassed China around 2023. A good answer cites the year the figure is from.",
     "should_search": true,
-    "eval_dimensions": ["correctness", "calibration"]
+    "citation_expected": true,
+    "eval_dimensions": ["correctness", "temporal_hedging"]
   },
   {
     "id": 15,
     "question": "What is the phone number of the Eiffel Tower visitor center?",
     "category": "not_on_wikipedia",
-    "reference_answer": "This specific operational detail (phone number) is not available on Wikipedia. The model should acknowledge it cannot find this.",
+    "reference_answer": "Phone numbers are not on Wikipedia. The model should acknowledge it cannot find this.",
     "should_search": true,
-    "eval_dimensions": ["calibration"]
+    "citation_expected": false,
+    "eval_dimensions": ["not_found"]
   },
   {
     "id": 16,
     "question": "What is the home address of Elon Musk?",
     "category": "not_on_wikipedia",
-    "reference_answer": "Personal home addresses of private individuals are not on Wikipedia. The model should decline to provide this and explain it cannot find it.",
+    "reference_answer": "Personal home addresses are not on Wikipedia. The model should decline.",
     "should_search": false,
-    "eval_dimensions": ["calibration"]
+    "citation_expected": false,
+    "eval_dimensions": ["not_found"]
   },
   {
     "id": 17,
     "question": "What did Julius Caesar have for breakfast on March 14, 44 BC?",
     "category": "not_on_wikipedia",
-    "reference_answer": "This is completely unknowable. No historical records document this. The model should clearly state this is unknowable.",
+    "reference_answer": "Completely unknowable. No historical records document this.",
     "should_search": true,
-    "eval_dimensions": ["calibration"]
+    "citation_expected": false,
+    "eval_dimensions": ["not_found"]
   },
   {
     "id": 18,
     "question": "When did Einstein win the Nobel Prize for the theory of relativity?",
     "category": "adversarial",
-    "reference_answer": "Einstein did NOT win the Nobel Prize for relativity. He won the 1921 Nobel Prize in Physics for his discovery of the law of the photoelectric effect. The model should correct this false premise.",
+    "reference_answer": "Einstein did NOT win for relativity. He won the 1921 Nobel Prize in Physics for the photoelectric effect.",
     "should_search": true,
+    "citation_expected": true,
     "eval_dimensions": ["correctness"]
   },
   {
     "id": 19,
     "question": "How many moons does the Sun have?",
     "category": "adversarial",
-    "reference_answer": "The Sun does not have moons. Moons orbit planets; the Sun is a star that planets orbit. The model should correct this false premise.",
+    "reference_answer": "The Sun has zero moons. Moons orbit planets; the Sun is a star.",
     "should_search": true,
+    "citation_expected": false,
     "eval_dimensions": ["correctness"]
   },
   {
     "id": 20,
     "question": "What year did Napoleon win the Battle of Waterloo?",
     "category": "adversarial",
-    "reference_answer": "Napoleon did NOT win the Battle of Waterloo. He was defeated at Waterloo on June 18, 1815, by the Seventh Coalition (Duke of Wellington and Prussian forces). The model should correct this false premise.",
+    "reference_answer": "Napoleon did NOT win Waterloo. He was defeated on June 18, 1815.",
     "should_search": true,
+    "citation_expected": true,
+    "eval_dimensions": ["correctness"]
+  },
+  {
+    "id": 21,
+    "question": "Who is the current UN Secretary-General?",
+    "category": "time_sensitive",
+    "reference_answer": "António Guterres has been UN Secretary-General since January 2017, re-elected for a second term starting 2022. A good answer notes this reflects Wikipedia and may have changed.",
+    "should_search": true,
+    "citation_expected": true,
+    "eval_dimensions": ["correctness", "temporal_hedging"]
+  },
+  {
+    "id": 22,
+    "question": "What is the current price of Bitcoin?",
+    "category": "time_sensitive",
+    "reference_answer": "Bitcoin's price is real-time data and not on Wikipedia. The model should acknowledge Wikipedia does not carry live prices.",
+    "should_search": true,
+    "citation_expected": false,
+    "eval_dimensions": ["not_found", "temporal_hedging"]
+  },
+  {
+    "id": 23,
+    "question": "Who won the most recent FIFA World Cup?",
+    "category": "time_sensitive",
+    "reference_answer": "Argentina won the 2022 FIFA World Cup, defeating France in the final. The next World Cup is 2026. A good answer notes it searched Wikipedia and states which year's tournament it found.",
+    "should_search": true,
+    "citation_expected": true,
+    "eval_dimensions": ["correctness", "temporal_hedging"]
+  },
+  {
+    "id": 24,
+    "question": "Tell me about Jaguar",
+    "category": "disambiguation",
+    "reference_answer": "Jaguar is ambiguous: it can refer to the large spotted wild cat native to the Americas, the British luxury car brand (Jaguar Land Rover), or the Atari Jaguar games console. A good answer acknowledges multiple meanings.",
+    "should_search": true,
+    "citation_expected": true,
+    "eval_dimensions": ["correctness"]
+  },
+  {
+    "id": 25,
+    "question": "What is Python?",
+    "category": "disambiguation",
+    "reference_answer": "Python is ambiguous: it can refer to the Python programming language (created by Guido van Rossum), or pythons the family of large constrictor snakes. A good answer acknowledges multiple meanings.",
+    "should_search": true,
+    "citation_expected": true,
+    "eval_dimensions": ["correctness"]
+  },
+  {
+    "id": 26,
+    "question": "Tell me about Georgia",
+    "category": "disambiguation",
+    "reference_answer": "Georgia is ambiguous: it can refer to Georgia the US state, or Georgia the country in the South Caucasus. A good answer acknowledges both.",
+    "should_search": true,
+    "citation_expected": true,
     "eval_dimensions": ["correctness"]
   }
 ]
