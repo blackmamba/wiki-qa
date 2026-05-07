@@ -1,0 +1,162 @@
+[
+  {
+    "id": 1,
+    "question": "What is the capital of Japan?",
+    "category": "simple",
+    "reference_answer": "Tokyo",
+    "should_search": true,
+    "eval_dimensions": ["correctness"]
+  },
+  {
+    "id": 2,
+    "question": "In what year was the Eiffel Tower completed?",
+    "category": "simple",
+    "reference_answer": "1889",
+    "should_search": true,
+    "eval_dimensions": ["correctness"]
+  },
+  {
+    "id": 3,
+    "question": "How many bones are in the adult human body?",
+    "category": "simple",
+    "reference_answer": "206",
+    "should_search": true,
+    "eval_dimensions": ["correctness"]
+  },
+  {
+    "id": 4,
+    "question": "Who wrote Pride and Prejudice?",
+    "category": "simple",
+    "reference_answer": "Jane Austen",
+    "should_search": true,
+    "eval_dimensions": ["correctness"]
+  },
+  {
+    "id": 5,
+    "question": "What is the largest planet in the solar system?",
+    "category": "simple",
+    "reference_answer": "Jupiter",
+    "should_search": true,
+    "eval_dimensions": ["correctness"]
+  },
+  {
+    "id": 6,
+    "question": "Who was the US president when the Hubble Space Telescope was launched?",
+    "category": "multi_hop",
+    "reference_answer": "George H.W. Bush. The Hubble was launched in April 1990.",
+    "should_search": true,
+    "eval_dimensions": ["correctness"]
+  },
+  {
+    "id": 7,
+    "question": "What is the capital of the country where the Amazon River originates?",
+    "category": "multi_hop",
+    "reference_answer": "Lima. The Amazon originates in Peru, whose capital is Lima.",
+    "should_search": true,
+    "eval_dimensions": ["correctness"]
+  },
+  {
+    "id": 8,
+    "question": "What year did the founder of Microsoft drop out of college?",
+    "category": "multi_hop",
+    "reference_answer": "1975. Bill Gates dropped out of Harvard in 1975 to co-found Microsoft.",
+    "should_search": true,
+    "eval_dimensions": ["correctness"]
+  },
+  {
+    "id": 9,
+    "question": "What is the currency of the country that won the 2018 FIFA World Cup?",
+    "category": "multi_hop",
+    "reference_answer": "Euro. France won the 2018 FIFA World Cup, and France uses the Euro.",
+    "should_search": true,
+    "eval_dimensions": ["correctness"]
+  },
+  {
+    "id": 10,
+    "question": "What is Mercury?",
+    "category": "disambiguation",
+    "reference_answer": "Mercury is ambiguous: it can refer to the planet closest to the Sun, a chemical element (atomic number 80), the Roman messenger god, or the music band. A good answer acknowledges multiple meanings.",
+    "should_search": true,
+    "eval_dimensions": ["correctness"]
+  },
+  {
+    "id": 11,
+    "question": "What is Java?",
+    "category": "disambiguation",
+    "reference_answer": "Java is ambiguous: it can refer to the Indonesian island, the Java programming language, or Java coffee. A good answer acknowledges multiple meanings.",
+    "should_search": true,
+    "eval_dimensions": ["correctness"]
+  },
+  {
+    "id": 12,
+    "question": "Tell me about Ajax",
+    "category": "disambiguation",
+    "reference_answer": "Ajax is ambiguous: Ajax is a figure from Greek mythology, a Dutch football club (AFC Ajax), and a JavaScript programming technique (Asynchronous JavaScript and XML). A good answer acknowledges multiple meanings.",
+    "should_search": true,
+    "eval_dimensions": ["correctness"]
+  },
+  {
+    "id": 13,
+    "question": "Who is the current CEO of Apple?",
+    "category": "time_sensitive",
+    "reference_answer": "Tim Cook has been Apple's CEO since 2011. Model should search rather than rely solely on training data, and should indicate this may change.",
+    "should_search": true,
+    "eval_dimensions": ["correctness", "calibration"]
+  },
+  {
+    "id": 14,
+    "question": "What is the current population of India?",
+    "category": "time_sensitive",
+    "reference_answer": "Approximately 1.4 billion as of recent estimates. India surpassed China as the world's most populous country around 2023. Model should search and note data may be from a particular year.",
+    "should_search": true,
+    "eval_dimensions": ["correctness", "calibration"]
+  },
+  {
+    "id": 15,
+    "question": "What is the phone number of the Eiffel Tower visitor center?",
+    "category": "not_on_wikipedia",
+    "reference_answer": "This specific operational detail (phone number) is not available on Wikipedia. The model should acknowledge it cannot find this.",
+    "should_search": true,
+    "eval_dimensions": ["calibration"]
+  },
+  {
+    "id": 16,
+    "question": "What is the home address of Elon Musk?",
+    "category": "not_on_wikipedia",
+    "reference_answer": "Personal home addresses of private individuals are not on Wikipedia. The model should decline to provide this and explain it cannot find it.",
+    "should_search": false,
+    "eval_dimensions": ["calibration"]
+  },
+  {
+    "id": 17,
+    "question": "What did Julius Caesar have for breakfast on March 14, 44 BC?",
+    "category": "not_on_wikipedia",
+    "reference_answer": "This is completely unknowable. No historical records document this. The model should clearly state this is unknowable.",
+    "should_search": true,
+    "eval_dimensions": ["calibration"]
+  },
+  {
+    "id": 18,
+    "question": "When did Einstein win the Nobel Prize for the theory of relativity?",
+    "category": "adversarial",
+    "reference_answer": "Einstein did NOT win the Nobel Prize for relativity. He won the 1921 Nobel Prize in Physics for his discovery of the law of the photoelectric effect. The model should correct this false premise.",
+    "should_search": true,
+    "eval_dimensions": ["correctness"]
+  },
+  {
+    "id": 19,
+    "question": "How many moons does the Sun have?",
+    "category": "adversarial",
+    "reference_answer": "The Sun does not have moons. Moons orbit planets; the Sun is a star that planets orbit. The model should correct this false premise.",
+    "should_search": true,
+    "eval_dimensions": ["correctness"]
+  },
+  {
+    "id": 20,
+    "question": "What year did Napoleon win the Battle of Waterloo?",
+    "category": "adversarial",
+    "reference_answer": "Napoleon did NOT win the Battle of Waterloo. He was defeated at Waterloo on June 18, 1815, by the Seventh Coalition (Duke of Wellington and Prussian forces). The model should correct this false premise.",
+    "should_search": true,
+    "eval_dimensions": ["correctness"]
+  }
+]
