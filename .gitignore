@@ -220,3 +220,6 @@ __marimo__/
 # Eval results (local only)
 results/*.json
 results/*.jsonl
+
+# Exported chat transcripts
+transcript.jsonl
