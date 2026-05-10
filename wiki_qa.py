@@ -3,12 +3,12 @@
 
 import argparse
 import json
+import os
 import sys
+from pathlib import Path
 
 import anthropic
-import os
 from dotenv import dotenv_values
-from pathlib import Path
 
 from wikipedia import search_wikipedia
 
@@ -90,10 +90,41 @@ TOOL = {
 }
 
 DEFAULT_MODEL = "claude-sonnet-4-6"
+MAX_TOKENS = 1024
+
+
+def _build_result(
+    question: str,
+    answer: str,
+    tool_calls: list[dict],
+    model: str,
+) -> dict:
+    """Build the standard result dict returned by :func:`run_query`."""
+    return {
+        "question": question,
+        "answer": answer,
+        "tool_calls": tool_calls,
+        "search_count": len(tool_calls),
+        "searched": len(tool_calls) > 0,
+        "model": model,
+    }
 
 
 def run_query(question: str, model: str = DEFAULT_MODEL) -> dict:
-    """Run one question through the Wikipedia QA agent. Returns a result dict."""
+    """Run one question through the Wikipedia QA agent.
+
+    Drives the tool-use agentic loop: issues a message, handles ``tool_use``
+    stop reasons by calling :func:`wikipedia.search_wikipedia`, and loops until
+    the model returns ``end_turn`` (or an unexpected stop reason).
+
+    Args:
+        question: The natural-language question to answer.
+        model: Claude model ID to use for inference.
+
+    Returns:
+        A dict with keys: ``question``, ``answer``, ``tool_calls``,
+        ``search_count``, ``searched``, ``model``.
+    """
     client = anthropic.Anthropic()
     messages = [{"role": "user", "content": question}]
     tool_calls = []
@@ -101,7 +132,7 @@ def run_query(question: str, model: str = DEFAULT_MODEL) -> dict:
     while True:
         response = client.messages.create(
             model=model,
-            max_tokens=1024,
+            max_tokens=MAX_TOKENS,
             system=SYSTEM_PROMPT,
             tools=[TOOL],
             messages=messages,
@@ -130,24 +161,15 @@ def run_query(question: str, model: str = DEFAULT_MODEL) -> dict:
             answer = "".join(
                 block.text for block in response.content if hasattr(block, "text")
             )
-            return {
-                "question": question,
-                "answer": answer,
-                "tool_calls": tool_calls,
-                "search_count": len(tool_calls),
-                "searched": len(tool_calls) > 0,
-                "model": model,
-            }
+            return _build_result(question, answer, tool_calls, model)
 
         else:
-            return {
-                "question": question,
-                "answer": f"Unexpected stop reason: {response.stop_reason}",
-                "tool_calls": tool_calls,
-                "search_count": len(tool_calls),
-                "searched": len(tool_calls) > 0,
-                "model": model,
-            }
+            return _build_result(
+                question,
+                f"Unexpected stop reason: {response.stop_reason}",
+                tool_calls,
+                model,
+            )
 
 
 DEMO_QUESTIONS = [
@@ -159,7 +181,8 @@ DEMO_QUESTIONS = [
 ]
 
 
-def main():
+def main() -> None:
+    """Parse CLI arguments and run one question (or the built-in demo suite)."""
     parser = argparse.ArgumentParser(description="Wikipedia QA agent powered by Claude")
     parser.add_argument("question", nargs="?", help="Question to answer")
     parser.add_argument(
