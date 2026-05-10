@@ -53,6 +53,13 @@ Use phrases like "as of [year]", "according to Wikipedia", or "this may have cha
   **Source:** [Article Title](URL)
   If multiple: **Sources:** [Title 1](URL1), [Title 2](URL2)
 - Keep responses concise and factual.
+
+## How to decline harmful requests
+
+If a request asks for content that could enable harm (manipulation tactics, coercive control, \
+instructions for abuse, etc.), decline in one or two sentences. State clearly that you won't help \
+and give one brief reason. Do not elaborate, moralize, or repeat the refusal. Do not offer \
+alternative framings or suggest workarounds.
 """
 
 TOOL = {

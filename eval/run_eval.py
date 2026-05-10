@@ -14,7 +14,15 @@ from pathlib import Path
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from judge import score_correctness, score_not_found, score_temporal_hedging
+from judge import (
+    score_correctness,
+    score_not_found,
+    score_temporal_hedging,
+    score_sycophancy,
+    score_harmful_refusal,
+    score_honesty_under_pressure,
+    score_premise_correction,
+)
 from wiki_qa import run_query
 
 os.environ.update(dotenv_values(Path(__file__).parent.parent / ".env"))
@@ -32,9 +40,19 @@ def _wrap(text: str, indent: int = 10, width: int = 90) -> str:
     return textwrap.fill(text, width=width, initial_indent=prefix, subsequent_indent=prefix)
 
 
-def run_eval(models: list[str], verbose: bool = False, label: str = "") -> None:
+def run_eval(
+    models: list[str],
+    verbose: bool = False,
+    label: str = "",
+    case_ids: list[int] = None,
+) -> None:
     with open(CASES_PATH) as f:
         cases = json.load(f)
+
+    if case_ids:
+        cases = [c for c in cases if c["id"] in case_ids]
+        if not cases:
+            sys.exit(f"No cases found for IDs: {case_ids}")
 
     client = anthropic.Anthropic()
     all_results = {}
@@ -108,6 +126,34 @@ def run_eval(models: list[str], verbose: bool = False, label: str = "") -> None:
                 row["temporal_hedging_score"] = j["score"]
                 row["temporal_hedging_reasoning"] = j["reasoning"]
                 score_lines.append((f"temporal={j['score']}/2", j["reasoning"]))
+
+            # ── Sycophancy judge ──────────────────────────────────────────
+            if "sycophancy" in dims:
+                j = score_sycophancy(q, answer, client)
+                row["sycophancy_score"] = j["score"]
+                row["sycophancy_reasoning"] = j["reasoning"]
+                score_lines.append((f"sycophancy={j['score']}/2", j["reasoning"]))
+
+            # ── Harmful refusal judge ─────────────────────────────────────
+            if "harmful_refusal" in dims:
+                j = score_harmful_refusal(q, answer, client)
+                row["harmful_refusal_score"] = j["score"]
+                row["harmful_refusal_reasoning"] = j["reasoning"]
+                score_lines.append((f"harmful_refusal={j['score']}/2", j["reasoning"]))
+
+            # ── Honesty under pressure judge ──────────────────────────────
+            if "honesty_under_pressure" in dims:
+                j = score_honesty_under_pressure(q, answer, client)
+                row["honesty_under_pressure_score"] = j["score"]
+                row["honesty_under_pressure_reasoning"] = j["reasoning"]
+                score_lines.append((f"honesty_pressure={j['score']}/2", j["reasoning"]))
+
+            # ── Premise correction judge ──────────────────────────────────
+            if "premise_correction" in dims:
+                j = score_premise_correction(q, answer, client)
+                row["premise_correction_score"] = j["score"]
+                row["premise_correction_reasoning"] = j["reasoning"]
+                score_lines.append((f"premise_correction={j['score']}/2", j["reasoning"]))
 
             for score_str, reasoning in score_lines:
                 if verbose:
@@ -256,9 +302,15 @@ def main():
         help="Short name for this run, e.g. 'baseline' or 'v2-temporal-hedging'. "
              "Included in the filename and stored in result metadata.",
     )
+    parser.add_argument(
+        "--cases",
+        default="",
+        help="Comma-separated case IDs to run, e.g. '27,28,29,30'. Runs all cases if omitted.",
+    )
     args = parser.parse_args()
     models = [m.strip() for m in args.models.split(",")]
-    run_eval(models, verbose=args.verbose, label=args.label)
+    case_ids = [int(x.strip()) for x in args.cases.split(",") if x.strip()] if args.cases else None
+    run_eval(models, verbose=args.verbose, label=args.label, case_ids=case_ids)
 
 
 if __name__ == "__main__":
