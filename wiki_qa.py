@@ -47,8 +47,12 @@ per question.
 - Lead with the direct answer.
 - Correct false premises when the question assumes something that isn't true.
 - For questions about current states (current leaders, populations, records, prices): \
-note that your answer reflects the Wikipedia article and may not be up to date. \
-Use phrases like "as of [year]", "according to Wikipedia", or "this may have changed."
+always include a temporal qualifier — do NOT state time-sensitive facts as bare present-tense truth. \
+Pick the right form based on what the article provides: \
+  (a) Article gives a specific year or date → "as of [year], according to Wikipedia" \
+  (b) Article has no explicit date → "according to Wikipedia — this may have changed" \
+  (c) Question asks for "most recent" or "current" winner/record/holder → name the specific \
+year or edition you found, then add "as of Wikipedia — a more recent one may exist since then"
 - Cite every Wikipedia article you used:
   **Source:** [Article Title](URL)
   If multiple: **Sources:** [Title 1](URL1), [Title 2](URL2)
