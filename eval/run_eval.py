@@ -4,6 +4,7 @@
 import argparse
 import json
 import os
+import re
 import sys
 import textwrap
 from datetime import datetime
@@ -180,7 +181,10 @@ def run_eval(
         _print_summary(model, model_results)
 
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    label_part = f"_{label}" if label else ""
+    # Sanitize label: allow only alphanumerics, hyphens, underscores to prevent
+    # path traversal (e.g. --label "../../etc/passwd") in the output filename.
+    safe_label = re.sub(r"[^A-Za-z0-9_-]", "_", label) if label else ""
+    label_part = f"_{safe_label}" if safe_label else ""
     out_path = os.path.join(RESULTS_DIR, f"run_{timestamp}{label_part}.json")
     os.makedirs(RESULTS_DIR, exist_ok=True)
 

@@ -32,10 +32,7 @@ cp .env.example .env
 # ANTHROPIC_API_KEY=sk-ant-...
 ```
 
-Or export it directly:
-```bash
-export ANTHROPIC_API_KEY=sk-ant-...
-```
+Never commit `.env` — it is gitignored. The `.env.example` file contains only a placeholder value and is safe to track.
 
 ---
 
@@ -69,9 +66,11 @@ Available models:
 
 ## Eval suite
 
-Runs 20 test cases across 6 categories (simple factual, multi-hop, disambiguation, time-sensitive, not-on-Wikipedia, adversarial premise). Scores correctness and calibration using an LLM judge, plus programmatic search-behavior and citation checks.
+30 test cases across 8 behavioral categories: simple factual, multi-hop, disambiguation, time-sensitive, not-on-Wikipedia, adversarial premise, sycophancy, honesty under pressure, and harmful refusal.
 
-### Run on default model (Sonnet)
+Scores 7 dimensions using an LLM-as-judge (correctness, not-found acknowledgment, temporal hedging, sycophancy, harmful refusal, honesty under pressure, premise correction), plus programmatic search-behavior and citation checks.
+
+### Run the full suite
 
 ```bash
 python eval/run_eval.py
@@ -83,7 +82,28 @@ python eval/run_eval.py
 python eval/run_eval.py --models claude-sonnet-4-6,claude-haiku-4-5-20251001
 ```
 
-Results are saved to `results/run_<timestamp>.json`.
+### Useful flags
+
+```bash
+# Verbose: show full answers and judge reasoning per case
+python eval/run_eval.py -v
+
+# Run only specific cases (e.g. honesty/safety cases)
+python eval/run_eval.py --cases 27,28,29,30
+
+# Label the run for later comparison
+python eval/run_eval.py --label v5-temporal-hedging
+```
+
+Results are saved to `results/run_<timestamp>[_label].json` (gitignored).
+
+### Compare two runs
+
+```bash
+python eval/compare.py results/run_A.json results/run_B.json
+```
+
+Shows aggregate score deltas, per-category breakdown, and per-case regressions (▼) and improvements (▲).
 
 ---
 
@@ -94,15 +114,24 @@ wiki-qa/
 ├── wiki_qa.py          # Agent: system prompt, tool definition, agentic loop, CLI
 ├── wikipedia.py        # MediaWiki API wrapper (search + fetch extract)
 ├── requirements.txt
-├── .env.example
+├── .env.example        # Placeholder only — never contains real credentials
 ├── eval/
-│   ├── cases.json      # 20 hand-curated test cases
-│   ├── judge.py        # LLM-as-judge scoring (correctness + calibration)
-│   └── run_eval.py     # Eval runner — runs all cases, prints summary
+│   ├── cases.json      # 30 hand-curated test cases across 8 categories
+│   ├── judge.py        # LLM-as-judge scoring (7 behavioral dimensions)
+│   ├── run_eval.py     # Eval runner: --models, --cases, --label, -v
+│   └── compare.py      # Side-by-side diff of two result files
 ├── results/            # Eval run outputs (gitignored)
 └── docs/
-    └── rationale.md    # Design rationale (prompt choices, eval design, findings)
+    └── rationale.md    # Design rationale: prompt choices, eval design, findings, iteration history
 ```
+
+## Security
+
+- `ANTHROPIC_API_KEY` is read from `.env` at runtime and never hardcoded
+- `.env` is gitignored; `.env.example` contains only a placeholder (`sk-ant-api03-...`)
+- Eval result files (`results/*.json`) are gitignored — they may contain question answers but no credentials
+- Wikipedia API requests go only to `en.wikipedia.org/w/api.php` over HTTPS
+- The `--label` flag is sanitized to alphanumerics, hyphens, and underscores before use in filenames
 
 ## Design rationale
 

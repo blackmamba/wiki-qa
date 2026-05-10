@@ -8,24 +8,37 @@ WIKI_API = "https://en.wikipedia.org/w/api.php"
 EXTRACT_LIMIT = 2500
 HEADERS = {"User-Agent": "wiki-qa/1.0 (https://github.com/blackmamba/wiki-qa) httpx/0.27"}
 
+_ERROR_RESULT = {
+    "title": None,
+    "url": None,
+    "extract": "Wikipedia search is temporarily unavailable. Please try again.",
+}
+
 
 def search_wikipedia(query: str) -> dict:
-    """Search Wikipedia; return the best-match article's title, URL, and text extract."""
-    search_resp = httpx.get(
-        WIKI_API,
-        params={
-            "action": "query",
-            "list": "search",
-            "srsearch": query,
-            "srlimit": 3,
-            "format": "json",
-            "utf8": 1,
-        },
-        headers=HEADERS,
-        timeout=10,
-    )
-    search_resp.raise_for_status()
-    results = search_resp.json().get("query", {}).get("search", [])
+    """Search Wikipedia; return the best-match article's title, URL, and text extract.
+
+    Returns an error dict (title/url=None) rather than raising on network or
+    parse failures so the agentic loop can continue gracefully.
+    """
+    try:
+        search_resp = httpx.get(
+            WIKI_API,
+            params={
+                "action": "query",
+                "list": "search",
+                "srsearch": query,
+                "srlimit": 3,
+                "format": "json",
+                "utf8": 1,
+            },
+            headers=HEADERS,
+            timeout=10,
+        )
+        search_resp.raise_for_status()
+        results = search_resp.json().get("query", {}).get("search", [])
+    except (httpx.HTTPError, ValueError):
+        return _ERROR_RESULT
 
     if not results:
         return {
@@ -36,24 +49,27 @@ def search_wikipedia(query: str) -> dict:
 
     title = results[0]["title"]
 
-    extract_resp = httpx.get(
-        WIKI_API,
-        params={
-            "action": "query",
-            "titles": title,
-            "prop": "extracts",
-            "exintro": True,
-            "explaintext": True,
-            "format": "json",
-            "utf8": 1,
-        },
-        headers=HEADERS,
-        timeout=10,
-    )
-    extract_resp.raise_for_status()
-    pages = extract_resp.json().get("query", {}).get("pages", {})
-    page = next(iter(pages.values()))
-    extract = page.get("extract") or ""
+    try:
+        extract_resp = httpx.get(
+            WIKI_API,
+            params={
+                "action": "query",
+                "titles": title,
+                "prop": "extracts",
+                "exintro": True,
+                "explaintext": True,
+                "format": "json",
+                "utf8": 1,
+            },
+            headers=HEADERS,
+            timeout=10,
+        )
+        extract_resp.raise_for_status()
+        pages = extract_resp.json().get("query", {}).get("pages", {})
+        page = next(iter(pages.values()))
+        extract = page.get("extract") or ""
+    except (httpx.HTTPError, ValueError, StopIteration):
+        return _ERROR_RESULT
 
     if len(extract) > EXTRACT_LIMIT:
         extract = extract[:EXTRACT_LIMIT] + " ...[truncated]"

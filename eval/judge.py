@@ -18,7 +18,13 @@ def _call_judge(prompt: str, client: anthropic.Anthropic) -> dict:
         raw = raw.split("```")[1]
         if raw.startswith("json"):
             raw = raw[4:]
-    return json.loads(raw.strip())
+    try:
+        return json.loads(raw.strip())
+    except json.JSONDecodeError:
+        # Return a sentinel so a single malformed judge response doesn't abort
+        # an entire eval run. Score -1 makes it visible in results without
+        # silently poisoning aggregates.
+        return {"score": -1, "reasoning": f"[judge parse error] raw={raw[:120]!r}"}
 
 
 def score_correctness(
