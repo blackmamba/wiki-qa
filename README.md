@@ -2,7 +2,6 @@
 
 A Wikipedia QA system powered by Claude. Claude uses a `search_wikipedia` tool to look up facts before answering, grounding responses in retrieved sources.
 
-Built as part of an Anthropic prompt engineering take-home assignment.
 
 ## Setup
 
